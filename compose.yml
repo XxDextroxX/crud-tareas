@@ -1,19 +1,18 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: todo_db
     restart: unless-stopped
     ports:
-      - "5433:5432"
+      - "127.0.0.1:${DB_PORT:-5438}:5432"
     environment:
-      POSTGRES_DB: talima
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-talima}
+      POSTGRES_USER: ${POSTGRES_USER:-root}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U root -d talima" ]
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-root} -d $${POSTGRES_DB:-talima}" ]
       interval: 3s
       timeout: 5s
       retries: 5
@@ -23,10 +22,9 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
-    container_name: todo_fastapi_dev
     profiles: [ "dev" ]
     ports:
-      - "8000:8000"
+      - "127.0.0.1:${DEV_APP_PORT:-8050}:8000"
     volumes:
       - .:/app
     depends_on:
@@ -35,15 +33,14 @@ services:
     env_file:
       - .env
 
-  fastapi-prod:
+  fastapi:
     build:
       context: .
       dockerfile: Dockerfile
       target: production
-    container_name: todo_fastapi_prod
-    profiles: [ "prod" ]
+    profiles: [ "staging", "prod" ]
     ports:
-      - "8000:8000"
+      - "127.0.0.1:${APP_PORT:-8060}:8000"
     depends_on:
       db:
         condition: service_healthy

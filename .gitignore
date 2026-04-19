@@ -8,5 +8,7 @@ __pycache__/
 venv/
 
 .claude
+.codex
+codex
 GUIDE.md
 secret.json
