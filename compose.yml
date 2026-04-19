@@ -34,7 +34,6 @@ services:
       - .env
 
   fastapi:
-    image: ${REGISTRY_URL:?REGISTRY_URL is required}/${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: Dockerfile
