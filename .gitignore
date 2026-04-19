@@ -1,0 +1,12 @@
+.env
+secret.json
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+
+.claude
+GUIDE.md
+secret.json
